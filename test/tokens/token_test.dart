@@ -91,8 +91,8 @@ void main() {
         expect(underlineToken.lineStyle, defaultToken.lineStyle);
         expect(underlineToken.color, defaultToken.color);
 
-        underlineToken =
-            UnderlineToken.fromRaw(params: ["1", "2"], defaultValue: defaultToken);
+        underlineToken = UnderlineToken.fromRaw(
+            params: ["1", "2"], defaultValue: defaultToken);
         expect(underlineToken.color, defaultToken.color);
       });
 
@@ -101,8 +101,8 @@ void main() {
             UnderlineToken(lineType: 0, lineStyle: 0, color: 0xff000000);
 
         expect(
-            () => UnderlineToken.fromRaw(
-                params: [], defaultValue: defaultToken),
+            () =>
+                UnderlineToken.fromRaw(params: [], defaultValue: defaultToken),
             throwsA(isA<Exception>()));
         expect(
             () => UnderlineToken.fromRaw(
@@ -129,19 +129,20 @@ void main() {
     group('fromRaw', () {
       test('parses input correctly', () {
         final defaultToken = SizeToken(size: 4.35);
-        final token = SizeToken.fromRaw(params: ["2.3"], defaultValue: defaultToken);
+        final token =
+            SizeToken.fromRaw(params: ["2.3"], defaultValue: defaultToken);
         expect(token.size, 2.3);
       });
       test('returns default token on input "d"', () {
         final defaultToken = SizeToken(size: 4.35);
-        final token = SizeToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+        final token =
+            SizeToken.fromRaw(params: ["d"], defaultValue: defaultToken);
         expect(token.size, defaultToken.size);
       });
       test('throws error on invalid input', () {
         final defaultToken = SizeToken(size: 4.35);
         expect(
-            () => SizeToken.fromRaw(
-                params: ["hi"], defaultValue: defaultToken),
+            () => SizeToken.fromRaw(params: ["hi"], defaultValue: defaultToken),
             throwsA(isA<Exception>()));
       });
     });
@@ -158,19 +159,21 @@ void main() {
     group('fromRaw', () {
       test('parses input correctly', () {
         final defaultToken = ColorToken(color: 0xff000000);
-        final token = ColorToken.fromRaw(params: ["0xff000000"], defaultValue: defaultToken);
+        final token = ColorToken.fromRaw(
+            params: ["0xff000000"], defaultValue: defaultToken);
         expect(token.color, 0xff000000);
       });
       test('returns default token on input "d"', () {
         final defaultToken = ColorToken(color: 0xff000000);
-        final token = ColorToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+        final token =
+            ColorToken.fromRaw(params: ["d"], defaultValue: defaultToken);
         expect(token.color, defaultToken.color);
       });
       test('throws error on invalid input', () {
         final defaultToken = ColorToken(color: 0xff000000);
         expect(
-            () => ColorToken.fromRaw(
-                params: ["2.3"], defaultValue: defaultToken),
+            () =>
+                ColorToken.fromRaw(params: ["2.3"], defaultValue: defaultToken),
             throwsA(isA<Exception>()));
       });
     });
@@ -182,6 +185,28 @@ void main() {
       expect(italicsToken.isOn, 0);
       italicsToken = ItalicsToken(isOn: 2);
       expect(italicsToken.isOn, 1);
+    });
+
+    group('fromRaw', () {
+      test('parses input correctly', () {
+        final defaultToken = ItalicsToken(isOn: 0);
+        final token = ItalicsToken.fromRaw(
+            params: ["1"], defaultValue: defaultToken);
+        expect(token.isOn, 1);
+      });
+      test('returns default token on input "d"', () {
+        final defaultToken = ItalicsToken(isOn: 0);
+        final token =
+            ItalicsToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+        expect(token.isOn, defaultToken.isOn);
+      });
+      test('throws error on invalid input', () {
+        final defaultToken = ItalicsToken(isOn: 0);
+        expect(
+            () =>
+                ItalicsToken.fromRaw(params: ["2.3"], defaultValue: defaultToken),
+            throwsA(isA<Exception>()));
+      });
     });
   });
 

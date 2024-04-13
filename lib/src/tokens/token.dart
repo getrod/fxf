@@ -214,8 +214,20 @@ class ItalicsToken extends StyleToken {
   /// and [FontStyle.italic]
   ItalicsToken({required int isOn}) : isOn = _clip(isOn, 0, 1);
 
+  /// Creates a ItalicsToken from raw tokens
   factory ItalicsToken.fromRaw({required List<String> params, required ItalicsToken defaultValue}) {
-    throw UnimplementedError();
+    // if input is only "d", return it
+    var token =
+        _defaultRawTokenCheck(params: params, defaultValue: defaultValue);
+    if (token != null) return token;
+
+    // parse param inputs
+    final isOn = int.tryParse(params[0]);
+    if (isOn == null) {
+      throw Exception(
+          "${defaultValue.funcSymbol}: isOn expected int, got $isOn");
+    }
+    return ItalicsToken(isOn: isOn);
   }
 
   @override
