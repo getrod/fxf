@@ -7,7 +7,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      - name: List files in the repository
+      - name: Run Flutter tests
         run: |
-          ls ${{ github.workspace }}
+          flutter test
       - run: echo "🍏 This job's status is ${{ job.status }}."
