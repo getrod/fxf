@@ -37,6 +37,7 @@ T? _defaultRawTokenCheck<T extends StyleToken>(
     throw Exception("${defaultValue.funcSymbol}: params is empty.");
   }
   if (params.length == 1 && params[0] == "d") return defaultValue;
+  return null;
 }
 
 /// *(weight: int)
@@ -125,7 +126,8 @@ class UnderlineToken extends StyleToken {
           "${defaultValue.funcSymbol}: color expected int, got $color");
     }
 
-    return UnderlineToken(lineType: lineType, lineStyle: lineStyle, color: color);
+    return UnderlineToken(
+        lineType: lineType, lineStyle: lineStyle, color: color);
   }
 
   @override
@@ -147,6 +149,25 @@ class SizeToken extends StyleToken {
   ///
   /// [size] corresponds to [TextStyle].height and is clipped [0-inf]
   SizeToken({required double size}) : size = _clip(size, 0, double.infinity);
+
+  /// Creates a SizeToken from raw tokens
+  factory SizeToken.fromRaw(
+      {required List<String> params, required SizeToken defaultValue}) {
+    
+    // if input is only "d", return it
+    var token =
+        _defaultRawTokenCheck(params: params, defaultValue: defaultValue);
+    if (token != null) return token;
+
+    // parse param inputs
+    final size = double.tryParse(params[0]);
+    if (size == null) {
+      throw Exception(
+          "${defaultValue.funcSymbol}: size expected double, got $size");
+    }
+    return SizeToken(size: size);
+  }
+
   @override
   String get funcSymbol => "^";
 
@@ -161,6 +182,10 @@ class ColorToken extends StyleToken {
   /// [color] is a hexidecimal between ranges [0x00000000 - 0xffffffff]
   ColorToken({required int color})
       : color = _clip(color, 0x00000000, 0xffffffff);
+  
+  factory ColorToken.fromRaw({required List<String> params, required SizeToken defaultValue}) {
+    throw UnimplementedError();
+  }
   @override
   String get funcSymbol => "~";
 

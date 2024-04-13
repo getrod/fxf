@@ -102,6 +102,10 @@ void main() {
 
         expect(
             () => UnderlineToken.fromRaw(
+                params: [], defaultValue: defaultToken),
+            throwsA(isA<Exception>()));
+        expect(
+            () => UnderlineToken.fromRaw(
                 params: ["0.2"], defaultValue: defaultToken),
             throwsA(isA<Exception>()));
         expect(
@@ -120,6 +124,26 @@ void main() {
     test('size gets clipped between ranges [0-inf]', () {
       var sizeToken = SizeToken(size: -1);
       expect(sizeToken.size, 0);
+    });
+
+    group('fromRaw', () {
+      test('parses input correctly', () {
+        final defaultToken = SizeToken(size: 4.35);
+        final token = SizeToken.fromRaw(params: ["2.3"], defaultValue: defaultToken);
+        expect(token.size, 2.3);
+      });
+      test('returns default token on input "d"', () {
+        final defaultToken = SizeToken(size: 4.35);
+        final token = SizeToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+        expect(token.size, defaultToken.size);
+      });
+      test('throws error on invalid input', () {
+        final defaultToken = SizeToken(size: 4.35);
+        expect(
+            () => SizeToken.fromRaw(
+                params: ["hi"], defaultValue: defaultToken),
+            throwsA(isA<Exception>()));
+      });
     });
   });
 
