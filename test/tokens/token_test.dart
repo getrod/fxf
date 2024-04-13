@@ -10,6 +10,26 @@ void main() {
       boldToken = BoldToken(weight: 6);
       expect(boldToken.weight, 5);
     });
+
+    group('fromRaw', () {
+      test('param "d" returns defaultValue', () {
+        var boldToken = BoldToken.fromRaw(
+            params: ["d"], defaultValue: BoldToken(weight: 0));
+        expect(boldToken.weight, 0);
+      });
+      test('param parses weight value correctly', () {
+        var boldToken = BoldToken.fromRaw(
+            params: ["3"], defaultValue: BoldToken(weight: 0));
+        expect(boldToken.weight, 3);
+      });
+
+      test('throws error when weight is incorrect input', () {
+        expect(
+            () => BoldToken.fromRaw(
+                params: ["0.2"], defaultValue: BoldToken(weight: 0)),
+            throwsA(isA<Exception>()));
+      });
+    });
   });
 
   group('Underline', () {
@@ -74,5 +94,4 @@ void main() {
       expect(linkToken.styleChange, 1);
     });
   });
-
 }

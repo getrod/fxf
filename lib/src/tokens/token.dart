@@ -1,6 +1,9 @@
 import 'dart:ui'
     show TextDecoration, TextDecorationStyle, FontWeight, TextStyle, FontStyle;
 
+/// A unit that a string is converted to.
+///
+/// See [TextToken] and [StyleToken]
 class Token {}
 
 abstract class StyleToken extends Token {
@@ -8,6 +11,11 @@ abstract class StyleToken extends Token {
   ///
   /// Ex: The [func]
   String get funcSymbol;
+
+  @override
+  String toString() {
+    return funcSymbol;
+  }
 }
 
 class TextToken extends Token {
@@ -22,12 +30,38 @@ T _clip<T extends num>(T value, T begin, T end) => value < begin
         ? end
         : value;
 
+/// default raw token checks used for each style token's "fromRaw" factory constructor
+T? _defaultRawTokenCheck<T extends StyleToken>(
+    {required List<String> params, required T defaultValue}) {
+  if (params.isEmpty) {
+    throw Exception("${defaultValue.funcSymbol}: params is empty.");
+  }
+  if (params.length == 1 && params[0] == "d") return defaultValue;
+}
+
 /// *(weight: int)
 class BoldToken extends StyleToken {
   /// Creates a BoldToken
   ///
   /// [weight] corresponds to [FontWeight] and is clipped between [-3-5]
   BoldToken({required int weight}) : weight = _clip(weight, -3, 5);
+
+  /// Creates a BoldToken from raw tokens
+  factory BoldToken.fromRaw(
+      {required List<String> params, required BoldToken defaultValue}) {
+    // if input is only "d", return it
+    var token =
+        _defaultRawTokenCheck(params: params, defaultValue: defaultValue);
+    if (token != null) return token;
+
+    // parse param inputs
+    final weight = int.tryParse(params[0]);
+    if (weight == null) {
+      throw Exception(
+          "${defaultValue.funcSymbol}: weight expected double, got $weight");
+    }
+    return BoldToken(weight: weight);
+  }
 
   @override
   String get funcSymbol => "*";
@@ -128,9 +162,9 @@ class FontToken extends StyleToken {
 /// #(link: str, styleChange: int)
 class LinkToken extends StyleToken {
   /// Creates a LinkToken
-  /// 
+  ///
   /// [link] is a link, typically https
-  /// 
+  ///
   /// [styleChange] acts as a boolean (0 false, 1 true) for whether
   /// the text's style should change when user hovers over text.
   LinkToken({required this.link, required int styleChange})
