@@ -210,6 +210,15 @@ void main() {
     });
   });
 
+  group('Font', () {
+    test('fromRaw param "d" returns default value', () {
+      final defaultToken = FontToken(font: "Roboto");
+      final token =
+            FontToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+      expect(token.font, defaultToken.font);
+    });
+  });
+
   group('Link', () {
     test('styleChange gets clipped between ranges [0-1]', () {
       var linkToken = LinkToken(link: "", styleChange: -1);

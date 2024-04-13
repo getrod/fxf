@@ -153,7 +153,6 @@ class SizeToken extends StyleToken {
   /// Creates a SizeToken from raw tokens
   factory SizeToken.fromRaw(
       {required List<String> params, required SizeToken defaultValue}) {
-    
     // if input is only "d", return it
     var token =
         _defaultRawTokenCheck(params: params, defaultValue: defaultValue);
@@ -182,9 +181,10 @@ class ColorToken extends StyleToken {
   /// [color] is a hexidecimal between ranges [0x00000000 - 0xffffffff]
   ColorToken({required int color})
       : color = _clip(color, 0x00000000, 0xffffffff);
-  
+
   /// Creates a ColorToken from raw tokens
-  factory ColorToken.fromRaw({required List<String> params, required ColorToken defaultValue}) {
+  factory ColorToken.fromRaw(
+      {required List<String> params, required ColorToken defaultValue}) {
     // if input is only "d", return it
     var token =
         _defaultRawTokenCheck(params: params, defaultValue: defaultValue);
@@ -215,7 +215,8 @@ class ItalicsToken extends StyleToken {
   ItalicsToken({required int isOn}) : isOn = _clip(isOn, 0, 1);
 
   /// Creates a ItalicsToken from raw tokens
-  factory ItalicsToken.fromRaw({required List<String> params, required ItalicsToken defaultValue}) {
+  factory ItalicsToken.fromRaw(
+      {required List<String> params, required ItalicsToken defaultValue}) {
     // if input is only "d", return it
     var token =
         _defaultRawTokenCheck(params: params, defaultValue: defaultValue);
@@ -245,6 +246,18 @@ class FontToken extends StyleToken {
   ///
   /// [font] corresponds to [TextStyle] fontFamily.
   FontToken({required this.font});
+
+  /// Creates a FontToken from raw tokens
+  factory FontToken.fromRaw(
+      {required List<String> params, required FontToken defaultValue}) {
+    // if input is only "d", return it
+    var token =
+        _defaultRawTokenCheck(params: params, defaultValue: defaultValue);
+    if (token != null) return token;
+
+    final font = params[0];
+    return FontToken(font: font);
+  }
   @override
   String get funcSymbol => "@";
 
