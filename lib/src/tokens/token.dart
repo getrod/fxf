@@ -275,6 +275,32 @@ class LinkToken extends StyleToken {
   /// the text's style should change when user hovers over text.
   LinkToken({required this.link, required int styleChange})
       : styleChange = _clip(styleChange, 0, 1);
+
+  /// Creates a LinkToken from raw tokens
+  ///
+  /// If not all the parameters are present, return default values.
+  factory LinkToken.fromRaw(
+      {required List<String> params, required LinkToken defaultValue}) {
+    // if input is only "d", return it
+    var token =
+        _defaultRawTokenCheck(params: params, defaultValue: defaultValue);
+    if (token != null) return token;
+
+    // get link
+    final link = params[0];
+
+    // parse styleChange
+    // if no second parameter, return default
+    final styleChange =
+        params.length >= 2 ? int.tryParse(params[1]) : defaultValue.styleChange;
+    if (styleChange == null) {
+      throw Exception(
+          "${defaultValue.funcSymbol}: styleChange expected int, got $styleChange");
+    }
+
+    return LinkToken(link: link, styleChange: styleChange);
+  }
+
   @override
   String get funcSymbol => "#";
 

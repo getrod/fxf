@@ -190,8 +190,8 @@ void main() {
     group('fromRaw', () {
       test('parses input correctly', () {
         final defaultToken = ItalicsToken(isOn: 0);
-        final token = ItalicsToken.fromRaw(
-            params: ["1"], defaultValue: defaultToken);
+        final token =
+            ItalicsToken.fromRaw(params: ["1"], defaultValue: defaultToken);
         expect(token.isOn, 1);
       });
       test('returns default token on input "d"', () {
@@ -203,8 +203,8 @@ void main() {
       test('throws error on invalid input', () {
         final defaultToken = ItalicsToken(isOn: 0);
         expect(
-            () =>
-                ItalicsToken.fromRaw(params: ["2.3"], defaultValue: defaultToken),
+            () => ItalicsToken.fromRaw(
+                params: ["2.3"], defaultValue: defaultToken),
             throwsA(isA<Exception>()));
       });
     });
@@ -214,7 +214,7 @@ void main() {
     test('fromRaw param "d" returns default value', () {
       final defaultToken = FontToken(font: "Roboto");
       final token =
-            FontToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+          FontToken.fromRaw(params: ["d"], defaultValue: defaultToken);
       expect(token.font, defaultToken.font);
     });
   });
@@ -225,6 +225,23 @@ void main() {
       expect(linkToken.styleChange, 0);
       linkToken = LinkToken(link: "", styleChange: 2);
       expect(linkToken.styleChange, 1);
+    });
+
+    group('fromRaw', () {
+      test('param "d" returns default value', () {
+        final defaultToken = LinkToken(link: "google.com", styleChange: 1);
+        final token =
+            LinkToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+        expect(token.link, defaultToken.link);
+      });
+      test('missing param inputs returns default values', () {
+        var defaultToken = LinkToken(link: "google.com", styleChange: 0);
+
+        var linkToken = LinkToken.fromRaw(
+            params: ["google.com"], defaultValue: defaultToken);
+
+        expect(linkToken.styleChange, defaultToken.styleChange);
+      });
     });
   });
 }
