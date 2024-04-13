@@ -79,6 +79,17 @@ void main() {
         expect(underlineToken.lineType, defaultToken.lineType);
         expect(underlineToken.lineStyle, defaultToken.lineStyle);
         expect(underlineToken.color, defaultToken.color);
+
+        underlineToken = UnderlineToken.fromRaw(
+            params: ["1", "d", "d"], defaultValue: defaultToken);
+        expect(underlineToken.lineStyle, defaultToken.lineStyle);
+        expect(underlineToken.color, defaultToken.color);
+
+        underlineToken = UnderlineToken.fromRaw(
+            params: ["d", "d", "d"], defaultValue: defaultToken);
+        expect(underlineToken.lineType, defaultToken.lineType);
+        expect(underlineToken.lineStyle, defaultToken.lineStyle);
+        expect(underlineToken.color, defaultToken.color);
       });
 
       test('missing param inputs returns default values', () {
@@ -240,6 +251,10 @@ void main() {
         var linkToken = LinkToken.fromRaw(
             params: ["google.com"], defaultValue: defaultToken);
 
+        expect(linkToken.styleChange, defaultToken.styleChange);
+        linkToken =
+            LinkToken.fromRaw(params: ["d", "d"], defaultValue: defaultToken);
+        expect(linkToken.link, defaultToken.link);
         expect(linkToken.styleChange, defaultToken.styleChange);
       });
     });

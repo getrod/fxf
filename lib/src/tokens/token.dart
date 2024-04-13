@@ -1,12 +1,18 @@
 import 'dart:ui'
     show TextDecoration, TextDecorationStyle, FontWeight, TextStyle, FontStyle;
 
+const List<String> kFunctionSymbolNames = ["*", "!", "^", "~", "`", "#", "@"];
+
 /// A unit that a string is converted to.
 ///
 /// See [TextToken] and [StyleToken]
-class Token {}
+class Token {
+  const Token();
+}
 
 abstract class StyleToken extends Token {
+  const StyleToken();
+
   /// The symbol that represents the style function
   ///
   /// Ex: The [func]
@@ -21,6 +27,10 @@ abstract class StyleToken extends Token {
 class TextToken extends Token {
   TextToken({required this.text});
   final String text;
+  @override
+  String toString() {
+    return text;
+  }
 }
 
 /// Clips [value] between ranges [begin] - [end]
@@ -102,7 +112,8 @@ class UnderlineToken extends StyleToken {
     if (token != null) return token;
 
     // parse lineType
-    final lineType = int.tryParse(params[0]);
+    final lineType =
+        params[0] == "d" ? defaultValue.lineType : int.tryParse(params[0]);
     if (lineType == null) {
       throw Exception(
           "${defaultValue.funcSymbol}: lineType expected int, got $lineType");
@@ -110,8 +121,11 @@ class UnderlineToken extends StyleToken {
 
     // parse lineStyle
     // if no second parameter, return default
-    final lineStyle =
-        params.length >= 2 ? int.tryParse(params[1]) : defaultValue.lineStyle;
+    var lineStyle = params.length >= 2
+        ? params[1] == "d"
+            ? defaultValue.lineStyle
+            : int.tryParse(params[1])
+        : defaultValue.lineStyle;
     if (lineStyle == null) {
       throw Exception(
           "${defaultValue.funcSymbol}: lineStyle expected int, got $lineStyle");
@@ -119,8 +133,11 @@ class UnderlineToken extends StyleToken {
 
     // parse color
     // if no third parameter, return default
-    final color =
-        params.length >= 3 ? int.tryParse(params[2]) : defaultValue.color;
+    final color = params.length >= 3
+        ? params[2] == "d"
+            ? defaultValue.color
+            : int.tryParse(params[2])
+        : defaultValue.color;
     if (color == null) {
       throw Exception(
           "${defaultValue.funcSymbol}: color expected int, got $color");
@@ -287,12 +304,15 @@ class LinkToken extends StyleToken {
     if (token != null) return token;
 
     // get link
-    final link = params[0];
+    final link = params[0] == "d" ? defaultValue.link : params[0];
 
     // parse styleChange
     // if no second parameter, return default
-    final styleChange =
-        params.length >= 2 ? int.tryParse(params[1]) : defaultValue.styleChange;
+    final styleChange = params.length >= 2
+        ? params[1] == "d"
+            ? defaultValue.styleChange
+            : int.tryParse(params[1])
+        : defaultValue.styleChange;
     if (styleChange == null) {
       throw Exception(
           "${defaultValue.funcSymbol}: styleChange expected int, got $styleChange");
@@ -310,4 +330,43 @@ class LinkToken extends StyleToken {
   /// Acts as a boolean (0 false, 1 true) for whether
   /// the text's style should change when user hovers over text.
   final int styleChange;
+}
+
+class DefaultStyleTokenSettings {
+  DefaultStyleTokenSettings(
+      {int weight = 0,
+      int lineType = 0,
+      int lineStyle = 0,
+      int lineColor = 0xff000000,
+      double fontSize = 20,
+      int fontColor = 0xff000000,
+      int isOn = 0,
+      String fontName = "Roboto",
+      String linkName = "",
+      int styleChange = 1}) {
+    _bold = BoldToken(weight: weight);
+    _underline = UnderlineToken(
+        lineType: lineType, lineStyle: lineStyle, color: lineColor);
+    _size = SizeToken(size: fontSize);
+    _color = ColorToken(color: fontColor);
+    _italics = ItalicsToken(isOn: isOn);
+    _font = FontToken(font: fontName);
+    _link = LinkToken(link: linkName, styleChange: styleChange);
+  }
+
+  BoldToken get bold => _bold;
+  UnderlineToken get underline => _underline;
+  SizeToken get size => _size;
+  ColorToken get color => _color;
+  ItalicsToken get italics => _italics;
+  FontToken get font => _font;
+  LinkToken get link => _link;
+
+  late final BoldToken _bold;
+  late final UnderlineToken _underline;
+  late final SizeToken _size;
+  late final ColorToken _color;
+  late final ItalicsToken _italics;
+  late final FontToken _font;
+  late final LinkToken _link;
 }
