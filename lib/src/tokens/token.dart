@@ -183,8 +183,20 @@ class ColorToken extends StyleToken {
   ColorToken({required int color})
       : color = _clip(color, 0x00000000, 0xffffffff);
   
-  factory ColorToken.fromRaw({required List<String> params, required SizeToken defaultValue}) {
-    throw UnimplementedError();
+  /// Creates a ColorToken from raw tokens
+  factory ColorToken.fromRaw({required List<String> params, required ColorToken defaultValue}) {
+    // if input is only "d", return it
+    var token =
+        _defaultRawTokenCheck(params: params, defaultValue: defaultValue);
+    if (token != null) return token;
+
+    // parse param inputs
+    final color = int.tryParse(params[0]);
+    if (color == null) {
+      throw Exception(
+          "${defaultValue.funcSymbol}: color expected int, got $color");
+    }
+    return ColorToken(color: color);
   }
   @override
   String get funcSymbol => "~";
@@ -201,6 +213,11 @@ class ItalicsToken extends StyleToken {
   /// italics should be activated. Corresponds to [FontStyle.normal]
   /// and [FontStyle.italic]
   ItalicsToken({required int isOn}) : isOn = _clip(isOn, 0, 1);
+
+  factory ItalicsToken.fromRaw({required List<String> params, required ItalicsToken defaultValue}) {
+    throw UnimplementedError();
+  }
+
   @override
   String get funcSymbol => "`";
 

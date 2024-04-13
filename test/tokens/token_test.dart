@@ -154,6 +154,26 @@ void main() {
       colorToken = ColorToken(color: 0xffffffff + 1);
       expect(colorToken.color, 0xffffffff);
     });
+
+    group('fromRaw', () {
+      test('parses input correctly', () {
+        final defaultToken = ColorToken(color: 0xff000000);
+        final token = ColorToken.fromRaw(params: ["0xff000000"], defaultValue: defaultToken);
+        expect(token.color, 0xff000000);
+      });
+      test('returns default token on input "d"', () {
+        final defaultToken = ColorToken(color: 0xff000000);
+        final token = ColorToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+        expect(token.color, defaultToken.color);
+      });
+      test('throws error on invalid input', () {
+        final defaultToken = ColorToken(color: 0xff000000);
+        expect(
+            () => ColorToken.fromRaw(
+                params: ["2.3"], defaultValue: defaultToken),
+            throwsA(isA<Exception>()));
+      });
+    });
   });
 
   group('Italics', () {
