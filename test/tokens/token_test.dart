@@ -59,6 +59,61 @@ void main() {
           UnderlineToken(lineType: 0, lineStyle: 0, color: 0xffffffff + 1);
       expect(underlineToken.color, 0xffffffff);
     });
+
+    group('fromRaw', () {
+      test('all params are parsed correctly', () {
+        var underlineToken = UnderlineToken.fromRaw(
+            params: ["1", "2", "0xff000000"],
+            defaultValue: UnderlineToken(lineType: 0, lineStyle: 0, color: 0));
+        expect(underlineToken.lineType, 1);
+        expect(underlineToken.lineStyle, 2);
+        expect(underlineToken.color, 0xff000000);
+      });
+
+      test('param "d" returns default value', () {
+        var defaultToken =
+            UnderlineToken(lineType: 0, lineStyle: 0, color: 0xff000000);
+
+        var underlineToken =
+            UnderlineToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+        expect(underlineToken.lineType, defaultToken.lineType);
+        expect(underlineToken.lineStyle, defaultToken.lineStyle);
+        expect(underlineToken.color, defaultToken.color);
+      });
+
+      test('missing param inputs returns default values', () {
+        var defaultToken =
+            UnderlineToken(lineType: 0, lineStyle: 0, color: 0xff000000);
+
+        var underlineToken =
+            UnderlineToken.fromRaw(params: ["1"], defaultValue: defaultToken);
+
+        expect(underlineToken.lineStyle, defaultToken.lineStyle);
+        expect(underlineToken.color, defaultToken.color);
+
+        underlineToken =
+            UnderlineToken.fromRaw(params: ["1", "2"], defaultValue: defaultToken);
+        expect(underlineToken.color, defaultToken.color);
+      });
+
+      test('throws error on incorrect input', () {
+        var defaultToken =
+            UnderlineToken(lineType: 0, lineStyle: 0, color: 0xff000000);
+
+        expect(
+            () => UnderlineToken.fromRaw(
+                params: ["0.2"], defaultValue: defaultToken),
+            throwsA(isA<Exception>()));
+        expect(
+            () => UnderlineToken.fromRaw(
+                params: ["1", "2.3"], defaultValue: defaultToken),
+            throwsA(isA<Exception>()));
+        expect(
+            () => UnderlineToken.fromRaw(
+                params: ["1", "2", "3.3"], defaultValue: defaultToken),
+            throwsA(isA<Exception>()));
+      });
+    });
   });
 
   group('Size', () {

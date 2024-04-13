@@ -58,7 +58,7 @@ class BoldToken extends StyleToken {
     final weight = int.tryParse(params[0]);
     if (weight == null) {
       throw Exception(
-          "${defaultValue.funcSymbol}: weight expected double, got $weight");
+          "${defaultValue.funcSymbol}: weight expected int, got $weight");
     }
     return BoldToken(weight: weight);
   }
@@ -88,6 +88,45 @@ class UnderlineToken extends StyleToken {
       : lineType = _clip(lineType, 0, 3),
         lineStyle = _clip(lineStyle, 0, 4),
         color = _clip(color, 0x00000000, 0xffffffff);
+
+  /// Creates a UnderlineToken from raw tokens
+  ///
+  /// If not all the parameters are present, return default values.
+  /// ie. !(0,2) would return the default color.
+  factory UnderlineToken.fromRaw(
+      {required List<String> params, required UnderlineToken defaultValue}) {
+    // if input is only "d", return it
+    var token =
+        _defaultRawTokenCheck(params: params, defaultValue: defaultValue);
+    if (token != null) return token;
+
+    // parse lineType
+    final lineType = int.tryParse(params[0]);
+    if (lineType == null) {
+      throw Exception(
+          "${defaultValue.funcSymbol}: lineType expected int, got $lineType");
+    }
+
+    // parse lineStyle
+    // if no second parameter, return default
+    final lineStyle =
+        params.length >= 2 ? int.tryParse(params[1]) : defaultValue.lineStyle;
+    if (lineStyle == null) {
+      throw Exception(
+          "${defaultValue.funcSymbol}: lineStyle expected int, got $lineStyle");
+    }
+
+    // parse color
+    // if no third parameter, return default
+    final color =
+        params.length >= 3 ? int.tryParse(params[2]) : defaultValue.color;
+    if (color == null) {
+      throw Exception(
+          "${defaultValue.funcSymbol}: color expected int, got $color");
+    }
+
+    return UnderlineToken(lineType: lineType, lineStyle: lineStyle, color: color);
+  }
 
   @override
   String get funcSymbol => "!";
