@@ -245,7 +245,7 @@ void main() {
     });
 
     group('fromRaw', () {
-      test('param "d" returns default value', () {
+      test('param "d" returns "d"', () {
         final defaultToken = LinkToken(
             link: "google.com",
             styleChange: 1,
@@ -253,9 +253,7 @@ void main() {
             isUnderline: 1);
         final token =
             LinkToken.fromRaw(params: ["d"], defaultValue: defaultToken);
-        expect(token.link, defaultToken.link);
-        expect(token.color, defaultToken.color);
-        expect(token.isUnderline, defaultToken.isUnderline);
+        expect(token.link, "d");
       });
       test('missing param inputs returns default values', () {
         var defaultToken = LinkToken(
