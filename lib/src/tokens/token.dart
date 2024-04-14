@@ -341,10 +341,6 @@ class LinkToken extends StyleToken {
   /// If not all the parameters are present, return default values.
   factory LinkToken.fromRaw(
       {required List<String> params, required LinkToken defaultValue}) {
-    // if input is only "d", return it
-    var token =
-        _defaultRawTokenCheck(params: params, defaultValue: defaultValue);
-    if (token != null) return token;
 
     // get link
     final link = params[0];

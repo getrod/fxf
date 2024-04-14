@@ -97,7 +97,7 @@ class Text extends StatelessWidget {
     for (int i = 0; i < linkCount; i++) {
       hovers.add(false);
     }
-    ListChangeNotifier hoverNotifier = ListChangeNotifier(list: hovers);
+    ListChangeNotifier<bool> hoverNotifier = ListChangeNotifier(list: hovers);
 
     return ListenableBuilder(
       listenable: hoverNotifier,
