@@ -41,7 +41,7 @@ class ListChangeNotifier<T> extends ChangeNotifier {
 
 typedef LinkCallback = void Function(String link);
 
-/// Clone of [m.Text.rich] but with extra features
+/// Clone of [m.Text.rich] but with added text features
 class Text extends StatelessWidget {
   const Text(this.text,
       {super.key,
