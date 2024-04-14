@@ -1,5 +1,6 @@
 import 'dart:ui'
-    show TextDecoration, TextDecorationStyle, FontWeight, TextStyle, FontStyle;
+    show TextDecoration, TextDecorationStyle, FontWeight, FontStyle, Color;
+import 'package:flutter/painting.dart' show TextStyle;
 
 const List<String> kFunctionSymbolNames = ["*", "!", "^", "~", "`", "#", "@"];
 
@@ -17,6 +18,9 @@ abstract class StyleToken extends Token {
   ///
   /// Ex: The [func]
   String get funcSymbol;
+
+  /// Style token turned into [TextStyle]
+  TextStyle get style;
 
   @override
   String toString() {
@@ -85,6 +89,15 @@ class BoldToken extends StyleToken {
   /// 5 is [FontWeight.w900]
   /// -3 is [FontWeight.w100]
   final int weight;
+
+  /// The [FontWeight]'s index
+  ///
+  /// [weight] + 3
+  int get weightNormalized => weight + 3;
+
+  @override
+  TextStyle get style =>
+      TextStyle(fontWeight: FontWeight.values[weightNormalized]);
 }
 
 /// !(lineType: int, lineStyle: int, color: int)
@@ -158,6 +171,18 @@ class UnderlineToken extends StyleToken {
 
   /// A hexidecimal (ex. 0xff0000ff is blue)
   final int color;
+
+  @override
+  TextStyle get style => TextStyle(
+        decoration: [
+          TextDecoration.none,
+          TextDecoration.underline,
+          TextDecoration.overline,
+          TextDecoration.lineThrough
+        ][lineType],
+        decorationStyle: TextDecorationStyle.values[lineStyle],
+        decorationColor: Color(color),
+      );
 }
 
 /// ^(size: double)
@@ -189,6 +214,9 @@ class SizeToken extends StyleToken {
 
   /// Corresponds to [TextStyle].height and is clipped [0-inf]
   final double size;
+
+  @override
+  TextStyle get style => TextStyle(fontSize: size);
 }
 
 /// ~(color: int)
@@ -220,6 +248,9 @@ class ColorToken extends StyleToken {
 
   /// A hexidecimal (ex. 0xff0000ff is blue)
   final int color;
+
+  @override
+  TextStyle get style => TextStyle(color: Color(color));
 }
 
 /// `(isOn: int)
@@ -255,6 +286,9 @@ class ItalicsToken extends StyleToken {
   /// italics should be activated. Corresponds to [FontStyle.normal]
   /// and [FontStyle.italic]
   final int isOn;
+
+  @override
+  TextStyle get style => TextStyle(fontStyle: FontStyle.values[isOn]);
 }
 
 /// @(font: str)
@@ -280,9 +314,12 @@ class FontToken extends StyleToken {
 
   /// Corresponds to [TextStyle] fontFamily.
   final String font;
+
+  @override
+  TextStyle get style => TextStyle(fontFamily: font);
 }
 
-/// #(link: str, styleChange: int)
+/// #(link: str, styleChange: int, color: int, isUnderline: int)
 class LinkToken extends StyleToken {
   /// Creates a LinkToken
   ///
@@ -290,8 +327,14 @@ class LinkToken extends StyleToken {
   ///
   /// [styleChange] acts as a boolean (0 false, 1 true) for whether
   /// the text's style should change when user hovers over text.
-  LinkToken({required this.link, required int styleChange})
-      : styleChange = _clip(styleChange, 0, 1);
+  LinkToken(
+      {required this.link,
+      required int styleChange,
+      required int color,
+      required int isUnderline})
+      : styleChange = _clip(styleChange, 0, 1),
+        color = _clip(color, 0x00000000, 0xffffffff),
+        isUnderline = _clip(isUnderline, 0, 1);
 
   /// Creates a LinkToken from raw tokens
   ///
@@ -304,7 +347,7 @@ class LinkToken extends StyleToken {
     if (token != null) return token;
 
     // get link
-    final link = params[0] == "d" ? defaultValue.link : params[0];
+    final link = params[0];
 
     // parse styleChange
     // if no second parameter, return default
@@ -318,7 +361,31 @@ class LinkToken extends StyleToken {
           "${defaultValue.funcSymbol}: styleChange expected int, got $styleChange");
     }
 
-    return LinkToken(link: link, styleChange: styleChange);
+    final color = params.length >= 3
+        ? params[2] == "d"
+            ? defaultValue.color
+            : int.tryParse(params[2])
+        : defaultValue.color;
+    if (color == null) {
+      throw Exception(
+          "${defaultValue.funcSymbol}: color expected int, got $color");
+    }
+
+    final isUnderline = params.length >= 4
+        ? params[3] == "d"
+            ? defaultValue.isUnderline
+            : int.tryParse(params[3])
+        : defaultValue.isUnderline;
+    if (isUnderline == null) {
+      throw Exception(
+          "${defaultValue.funcSymbol}: isUnderline expected int, got $isUnderline");
+    }
+
+    return LinkToken(
+        link: link,
+        styleChange: styleChange,
+        color: color,
+        isUnderline: isUnderline);
   }
 
   @override
@@ -330,8 +397,23 @@ class LinkToken extends StyleToken {
   /// Acts as a boolean (0 false, 1 true) for whether
   /// the text's style should change when user hovers over text.
   final int styleChange;
+
+  final int color;
+
+  final int isUnderline;
+
+  @override
+  TextStyle get style => TextStyle(
+      color: Color(color),
+      decoration:
+          isUnderline == 1 ? TextDecoration.underline : TextDecoration.none,
+      decorationColor: Color(color));
+
+  /// This token is the link's end if link = "d"
+  bool get linkEnd => link.trim() == "d";
 }
 
+/// A class that holds default values for all style tokens
 class DefaultStyleTokenSettings {
   DefaultStyleTokenSettings(
       {int weight = 0,
@@ -343,6 +425,8 @@ class DefaultStyleTokenSettings {
       int isOn = 0,
       String fontName = "Roboto",
       String linkName = "",
+      int linkColor = 0xff0000ff,
+      int isUnderline = 1,
       int styleChange = 1}) {
     _bold = BoldToken(weight: weight);
     _underline = UnderlineToken(
@@ -351,7 +435,50 @@ class DefaultStyleTokenSettings {
     _color = ColorToken(color: fontColor);
     _italics = ItalicsToken(isOn: isOn);
     _font = FontToken(font: fontName);
-    _link = LinkToken(link: linkName, styleChange: styleChange);
+    _link = LinkToken(
+        link: linkName,
+        styleChange: styleChange,
+        color: linkColor,
+        isUnderline: isUnderline);
+  }
+
+  // TODO: untested
+  factory DefaultStyleTokenSettings.fromStyle(TextStyle style) {
+    final d = DefaultStyleTokenSettings();
+    int weight = style.fontWeight != null
+        ? FontWeight.values.indexOf(style.fontWeight!) - 3
+        : d.bold.weight;
+    final decorations = [
+      TextDecoration.none,
+      TextDecoration.underline,
+      TextDecoration.overline,
+      TextDecoration.lineThrough
+    ];
+    int lineType = style.decoration != null
+        ? decorations.indexOf(style.decoration!)
+        : d.underline.lineType;
+    int lineStyle = style.decorationStyle != null
+        ? TextDecorationStyle.values.indexOf(style.decorationStyle!)
+        : d.underline.lineStyle;
+    int lineColor = style.decorationColor != null
+        ? style.decorationColor!.value
+        : d.underline.color;
+    double fontSize = style.fontSize ?? d.size.size;
+    int fontColor = style.color?.value ?? d.color.color;
+    int isOn = style.fontStyle != null
+        ? FontStyle.values.indexOf(style.fontStyle!)
+        : d.italics.isOn;
+    String fontName = style.fontFamily ?? d.font.font;
+
+    return DefaultStyleTokenSettings(
+        weight: weight,
+        lineType: lineType,
+        lineStyle: lineStyle,
+        lineColor: lineColor,
+        fontSize: fontSize,
+        fontColor: fontColor,
+        isOn: isOn,
+        fontName: fontName);
   }
 
   BoldToken get bold => _bold;
@@ -361,6 +488,21 @@ class DefaultStyleTokenSettings {
   ItalicsToken get italics => _italics;
   FontToken get font => _font;
   LinkToken get link => _link;
+
+  TextStyle get style => TextStyle(
+      fontWeight: FontWeight.values[bold.weightNormalized],
+      decoration: [
+        TextDecoration.none,
+        TextDecoration.underline,
+        TextDecoration.overline,
+        TextDecoration.lineThrough
+      ][underline.lineType],
+      decorationStyle: TextDecorationStyle.values[underline.lineStyle],
+      decorationColor: Color(underline.color),
+      fontSize: size.size,
+      color: Color(color.color),
+      fontStyle: FontStyle.values[italics.isOn],
+      fontFamily: font.font);
 
   late final BoldToken _bold;
   late final UnderlineToken _underline;

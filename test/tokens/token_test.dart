@@ -231,31 +231,49 @@ void main() {
   });
 
   group('Link', () {
-    test('styleChange gets clipped between ranges [0-1]', () {
-      var linkToken = LinkToken(link: "", styleChange: -1);
+    test('values get clipped between ranges', () {
+      var linkToken = LinkToken(
+          link: "", styleChange: -1, color: 0x00000000 - 1, isUnderline: -1);
       expect(linkToken.styleChange, 0);
-      linkToken = LinkToken(link: "", styleChange: 2);
+      expect(linkToken.color, 0x00000000);
+      expect(linkToken.isUnderline, 0);
+      linkToken = LinkToken(
+          link: "", styleChange: 2, color: 0xffffffff + 1, isUnderline: 2);
       expect(linkToken.styleChange, 1);
+      expect(linkToken.color, 0xffffffff);
+      expect(linkToken.isUnderline, 1);
     });
 
     group('fromRaw', () {
       test('param "d" returns default value', () {
-        final defaultToken = LinkToken(link: "google.com", styleChange: 1);
+        final defaultToken = LinkToken(
+            link: "google.com",
+            styleChange: 1,
+            color: 0x00000000,
+            isUnderline: 1);
         final token =
             LinkToken.fromRaw(params: ["d"], defaultValue: defaultToken);
         expect(token.link, defaultToken.link);
+        expect(token.color, defaultToken.color);
+        expect(token.isUnderline, defaultToken.isUnderline);
       });
       test('missing param inputs returns default values', () {
-        var defaultToken = LinkToken(link: "google.com", styleChange: 0);
+        var defaultToken = LinkToken(
+            link: "google.com",
+            styleChange: 0,
+            color: 0x00000000,
+            isUnderline: 1);
 
         var linkToken = LinkToken.fromRaw(
             params: ["google.com"], defaultValue: defaultToken);
 
         expect(linkToken.styleChange, defaultToken.styleChange);
         linkToken =
-            LinkToken.fromRaw(params: ["d", "d"], defaultValue: defaultToken);
-        expect(linkToken.link, defaultToken.link);
+            LinkToken.fromRaw(params: ["d", "d", "d"], defaultValue: defaultToken);
+        expect(linkToken.link, "d");
         expect(linkToken.styleChange, defaultToken.styleChange);
+        expect(linkToken.color, defaultToken.color);
+        expect(linkToken.isUnderline, defaultToken.isUnderline);
       });
     });
   });
