@@ -74,6 +74,7 @@ class Text extends StatelessWidget {
   final TextWidthBasis? textWidthBasis;
   final TextHeightBehavior? textHeightBehavior;
   final Color? selectionColor;
+  /// A callback for when link is clicked / tapped.
   final LinkCallback? onLinkTap;
 
   @override
