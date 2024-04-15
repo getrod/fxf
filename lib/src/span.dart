@@ -108,6 +108,8 @@ class Text extends StatelessWidget {
         int count = 0;
         int linkPosition = -1;
         String link = "";
+        LinkToken linkToken =
+            LinkToken(link: "", styleChange: 1, color: 0, isUnderline: 0);
 
         for (final token in tokens) {
           if (token is StyleToken) {
@@ -135,8 +137,10 @@ class Text extends StatelessWidget {
                           ..onTap = () {
                             onLinkTap?.call(l);
                           },
-                        style: hoverNotifier.list[c]
-                            ? span.style!.merge(token.style)
+                        style: linkToken.styleChange == 1
+                            ? hoverNotifier.list[c]
+                                ? span.style!.merge(linkToken.style)
+                                : span.style!
                             : span.style!),
                   );
                 }
@@ -148,6 +152,7 @@ class Text extends StatelessWidget {
                 // link beginning
                 linkPosition = spans.length;
                 link = token.link;
+                linkToken = token;
               }
             } else {
               currentStyle = currentStyle.merge(token.style);
@@ -158,21 +163,19 @@ class Text extends StatelessWidget {
           }
         }
 
-        return m.Text.rich(
-          TextSpan(children: spans),
-          style: style,
-          strutStyle: strutStyle,
-          textAlign: textAlign,
-          textDirection: textDirection,
-          locale: locale,
-          softWrap: softWrap,
-          overflow: overflow,
-          textScaler: textScaler,
-          maxLines: maxLines,
-          semanticsLabel: semanticsLabel,
-          textHeightBehavior: textHeightBehavior,
-          selectionColor: selectionColor
-        );
+        return m.Text.rich(TextSpan(children: spans),
+            style: style,
+            strutStyle: strutStyle,
+            textAlign: textAlign,
+            textDirection: textDirection,
+            locale: locale,
+            softWrap: softWrap,
+            overflow: overflow,
+            textScaler: textScaler,
+            maxLines: maxLines,
+            semanticsLabel: semanticsLabel,
+            textHeightBehavior: textHeightBehavior,
+            selectionColor: selectionColor);
       },
     );
   }
