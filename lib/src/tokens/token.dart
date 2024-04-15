@@ -50,7 +50,7 @@ T? _defaultRawTokenCheck<T extends StyleToken>(
   if (params.isEmpty) {
     throw Exception("${defaultValue.funcSymbol}: params is empty.");
   }
-  if (params.length == 1 && params[0] == "d") return defaultValue;
+  if (params.length == 1 && params[0].trim() == "d") return defaultValue;
   return null;
 }
 
@@ -125,8 +125,9 @@ class UnderlineToken extends StyleToken {
     if (token != null) return token;
 
     // parse lineType
-    final lineType =
-        params[0] == "d" ? defaultValue.lineType : int.tryParse(params[0]);
+    final lineType = params[0].trim() == "d"
+        ? defaultValue.lineType
+        : int.tryParse(params[0]);
     if (lineType == null) {
       throw Exception(
           "${defaultValue.funcSymbol}: lineType expected int, got $lineType");
@@ -135,7 +136,7 @@ class UnderlineToken extends StyleToken {
     // parse lineStyle
     // if no second parameter, return default
     var lineStyle = params.length >= 2
-        ? params[1] == "d"
+        ? params[1].trim() == "d"
             ? defaultValue.lineStyle
             : int.tryParse(params[1])
         : defaultValue.lineStyle;
@@ -147,7 +148,7 @@ class UnderlineToken extends StyleToken {
     // parse color
     // if no third parameter, return default
     final color = params.length >= 3
-        ? params[2] == "d"
+        ? params[2].trim() == "d"
             ? defaultValue.color
             : int.tryParse(params[2])
         : defaultValue.color;
@@ -341,14 +342,13 @@ class LinkToken extends StyleToken {
   /// If not all the parameters are present, return default values.
   factory LinkToken.fromRaw(
       {required List<String> params, required LinkToken defaultValue}) {
-
     // get link
     final link = params[0];
 
     // parse styleChange
     // if no second parameter, return default
     final styleChange = params.length >= 2
-        ? params[1] == "d"
+        ? params[1].trim() == "d"
             ? defaultValue.styleChange
             : int.tryParse(params[1])
         : defaultValue.styleChange;
@@ -358,7 +358,7 @@ class LinkToken extends StyleToken {
     }
 
     final color = params.length >= 3
-        ? params[2] == "d"
+        ? params[2].trim() == "d"
             ? defaultValue.color
             : int.tryParse(params[2])
         : defaultValue.color;
@@ -368,7 +368,7 @@ class LinkToken extends StyleToken {
     }
 
     final isUnderline = params.length >= 4
-        ? params[3] == "d"
+        ? params[3].trim() == "d"
             ? defaultValue.isUnderline
             : int.tryParse(params[3])
         : defaultValue.isUnderline;
@@ -407,6 +407,11 @@ class LinkToken extends StyleToken {
 
   /// This token is the link's end if link = "d"
   bool get linkEnd => link.trim() == "d";
+
+  @override
+  String toString() {
+    return "$funcSymbol($link,$styleChange,$color,$isUnderline)";
+  }
 }
 
 /// A class that holds default values for all style tokens
