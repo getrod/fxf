@@ -4,8 +4,7 @@ import './tokens/token.dart';
 class TextParser {
   /// Convert [text] into [Token]s.
   static List<Token> parse(
-      {required String text,
-      DefaultStyleTokenSettings? defaultSetting}) {
+      {required String text, DefaultStyleTokenSettings? defaultSetting}) {
     final defaultTokens = defaultSetting ?? DefaultStyleTokenSettings();
     // get raw tokens
     List<Map<String, dynamic>> rawTokens = parseRichText(text);
@@ -19,41 +18,46 @@ class TextParser {
         final String funcSymbol = rawToken["func"];
         final List<String> params = rawToken["params"];
         StyleToken token;
-        switch (funcSymbol) {
-          case "*":
-            token = BoldToken.fromRaw(
-                params: params, defaultValue: defaultTokens.bold);
-            tokens.add(token);
-            break;
-          case "!":
-            token = UnderlineToken.fromRaw(
-                params: params, defaultValue: defaultTokens.underline);
-            tokens.add(token);
-            break;
-          case "^":
-            token = SizeToken.fromRaw(
-                params: params, defaultValue: defaultTokens.size);
-            tokens.add(token);
-            break;
-          case "~":
-            token = ColorToken.fromRaw(
-                params: params, defaultValue: defaultTokens.color);
-            tokens.add(token);
-            break;
-          case "`":
-            token = ItalicsToken.fromRaw(
-                params: params, defaultValue: defaultTokens.italics);
-            tokens.add(token);
-            break;
-          case "#":
-            token = LinkToken.fromRaw(
-                params: params, defaultValue: defaultTokens.link);
-            tokens.add(token);
-            break;
-          case "@":
-            token = FontToken.fromRaw(
-                params: params, defaultValue: defaultTokens.font);
-            tokens.add(token);
+        try {
+          switch (funcSymbol) {
+            case "*":
+              token = BoldToken.fromRaw(
+                  params: params, defaultValue: defaultTokens.bold);
+              tokens.add(token);
+              break;
+            case "!":
+              token = UnderlineToken.fromRaw(
+                  params: params, defaultValue: defaultTokens.underline);
+              tokens.add(token);
+              break;
+            case "^":
+              token = SizeToken.fromRaw(
+                  params: params, defaultValue: defaultTokens.size);
+              tokens.add(token);
+              break;
+            case "~":
+              token = ColorToken.fromRaw(
+                  params: params, defaultValue: defaultTokens.color);
+              tokens.add(token);
+              break;
+            case "`":
+              token = ItalicsToken.fromRaw(
+                  params: params, defaultValue: defaultTokens.italics);
+              tokens.add(token);
+              break;
+            case "#":
+              token = LinkToken.fromRaw(
+                  params: params, defaultValue: defaultTokens.link);
+              tokens.add(token);
+              break;
+            case "@":
+              token = FontToken.fromRaw(
+                  params: params, defaultValue: defaultTokens.font);
+              tokens.add(token);
+          }
+        } catch (e) {
+          throw Exception(
+              "${e.toString()}: ${_rawStyleTokenToString(funcSymbol, params)}");
         }
       }
     }
@@ -169,4 +173,8 @@ class TextParser {
 
     return tokenStream;
   }
+}
+
+String _rawStyleTokenToString(String funcSymbol, List<String> params) {
+  return "$funcSymbol(${params.join(",")})";
 }
