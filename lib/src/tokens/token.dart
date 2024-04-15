@@ -44,9 +44,16 @@ T _clip<T extends num>(T value, T begin, T end) => value < begin
         ? end
         : value;
 
+void _trimParams(List<String> params) {
+  for (int i = 0; i < params.length; i++) {
+    params[i] = params[i].trim();
+  }
+}
+
 /// default raw token checks used for each style token's "fromRaw" factory constructor
 T? _defaultRawTokenCheck<T extends StyleToken>(
     {required List<String> params, required T defaultValue}) {
+  _trimParams(params);
   if (params.isEmpty) {
     throw Exception("${defaultValue.funcSymbol}: params is empty.");
   }
@@ -125,9 +132,8 @@ class UnderlineToken extends StyleToken {
     if (token != null) return token;
 
     // parse lineType
-    final lineType = params[0].trim() == "d"
-        ? defaultValue.lineType
-        : int.tryParse(params[0]);
+    final lineType =
+        params[0] == "d" ? defaultValue.lineType : int.tryParse(params[0]);
     if (lineType == null) {
       throw Exception(
           "${defaultValue.funcSymbol}: lineType expected int, got $lineType");
@@ -136,7 +142,7 @@ class UnderlineToken extends StyleToken {
     // parse lineStyle
     // if no second parameter, return default
     var lineStyle = params.length >= 2
-        ? params[1].trim() == "d"
+        ? params[1] == "d"
             ? defaultValue.lineStyle
             : int.tryParse(params[1])
         : defaultValue.lineStyle;
@@ -148,7 +154,7 @@ class UnderlineToken extends StyleToken {
     // parse color
     // if no third parameter, return default
     final color = params.length >= 3
-        ? params[2].trim() == "d"
+        ? params[2] == "d"
             ? defaultValue.color
             : int.tryParse(params[2])
         : defaultValue.color;
@@ -342,13 +348,14 @@ class LinkToken extends StyleToken {
   /// If not all the parameters are present, return default values.
   factory LinkToken.fromRaw(
       {required List<String> params, required LinkToken defaultValue}) {
+    _trimParams(params);
     // get link
     final link = params[0];
 
     // parse styleChange
     // if no second parameter, return default
     final styleChange = params.length >= 2
-        ? params[1].trim() == "d"
+        ? params[1] == "d"
             ? defaultValue.styleChange
             : int.tryParse(params[1])
         : defaultValue.styleChange;
@@ -358,7 +365,7 @@ class LinkToken extends StyleToken {
     }
 
     final color = params.length >= 3
-        ? params[2].trim() == "d"
+        ? params[2] == "d"
             ? defaultValue.color
             : int.tryParse(params[2])
         : defaultValue.color;
@@ -368,7 +375,7 @@ class LinkToken extends StyleToken {
     }
 
     final isUnderline = params.length >= 4
-        ? params[3].trim() == "d"
+        ? params[3] == "d"
             ? defaultValue.isUnderline
             : int.tryParse(params[3])
         : defaultValue.isUnderline;

@@ -14,19 +14,19 @@ void main() {
     group('fromRaw', () {
       test('param "d" returns defaultValue', () {
         var boldToken = BoldToken.fromRaw(
-            params: ["d"], defaultValue: BoldToken(weight: 0));
+            params: [" d"], defaultValue: BoldToken(weight: 0));
         expect(boldToken.weight, 0);
       });
       test('param parses weight value correctly', () {
         var boldToken = BoldToken.fromRaw(
-            params: ["3"], defaultValue: BoldToken(weight: 0));
+            params: ["3 "], defaultValue: BoldToken(weight: 0));
         expect(boldToken.weight, 3);
       });
 
       test('throws error when weight is incorrect input', () {
         expect(
             () => BoldToken.fromRaw(
-                params: ["0.2"], defaultValue: BoldToken(weight: 0)),
+                params: [" 0.2"], defaultValue: BoldToken(weight: 0)),
             throwsA(isA<Exception>()));
       });
     });
@@ -63,7 +63,7 @@ void main() {
     group('fromRaw', () {
       test('all params are parsed correctly', () {
         var underlineToken = UnderlineToken.fromRaw(
-            params: ["1", "2", "0xff000000"],
+            params: ["1 ", "  2", "  0xff000000 "],
             defaultValue: UnderlineToken(lineType: 0, lineStyle: 0, color: 0));
         expect(underlineToken.lineType, 1);
         expect(underlineToken.lineStyle, 2);
@@ -81,12 +81,12 @@ void main() {
         expect(underlineToken.color, defaultToken.color);
 
         underlineToken = UnderlineToken.fromRaw(
-            params: ["1", "d", "d"], defaultValue: defaultToken);
+            params: ["1 ", "  d", "d  "], defaultValue: defaultToken);
         expect(underlineToken.lineStyle, defaultToken.lineStyle);
         expect(underlineToken.color, defaultToken.color);
 
         underlineToken = UnderlineToken.fromRaw(
-            params: ["d", "d", "d"], defaultValue: defaultToken);
+            params: [" d ", "d  ", " d"], defaultValue: defaultToken);
         expect(underlineToken.lineType, defaultToken.lineType);
         expect(underlineToken.lineStyle, defaultToken.lineStyle);
         expect(underlineToken.color, defaultToken.color);
@@ -97,13 +97,13 @@ void main() {
             UnderlineToken(lineType: 0, lineStyle: 0, color: 0xff000000);
 
         var underlineToken =
-            UnderlineToken.fromRaw(params: ["1"], defaultValue: defaultToken);
+            UnderlineToken.fromRaw(params: [" 1"], defaultValue: defaultToken);
 
         expect(underlineToken.lineStyle, defaultToken.lineStyle);
         expect(underlineToken.color, defaultToken.color);
 
         underlineToken = UnderlineToken.fromRaw(
-            params: ["1", "2"], defaultValue: defaultToken);
+            params: ["1 ", "  2"], defaultValue: defaultToken);
         expect(underlineToken.color, defaultToken.color);
       });
 
@@ -117,15 +117,15 @@ void main() {
             throwsA(isA<Exception>()));
         expect(
             () => UnderlineToken.fromRaw(
-                params: ["0.2"], defaultValue: defaultToken),
+                params: [" 0.2"], defaultValue: defaultToken),
             throwsA(isA<Exception>()));
         expect(
             () => UnderlineToken.fromRaw(
-                params: ["1", "2.3"], defaultValue: defaultToken),
+                params: ["1", "2.3  "], defaultValue: defaultToken),
             throwsA(isA<Exception>()));
         expect(
             () => UnderlineToken.fromRaw(
-                params: ["1", "2", "3.3"], defaultValue: defaultToken),
+                params: ["  1", "2 ", " 3.3 "], defaultValue: defaultToken),
             throwsA(isA<Exception>()));
       });
     });
@@ -141,19 +141,20 @@ void main() {
       test('parses input correctly', () {
         final defaultToken = SizeToken(size: 4.35);
         final token =
-            SizeToken.fromRaw(params: ["2.3"], defaultValue: defaultToken);
+            SizeToken.fromRaw(params: ["  2.3"], defaultValue: defaultToken);
         expect(token.size, 2.3);
       });
       test('returns default token on input "d"', () {
         final defaultToken = SizeToken(size: 4.35);
         final token =
-            SizeToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+            SizeToken.fromRaw(params: [" d"], defaultValue: defaultToken);
         expect(token.size, defaultToken.size);
       });
       test('throws error on invalid input', () {
         final defaultToken = SizeToken(size: 4.35);
         expect(
-            () => SizeToken.fromRaw(params: ["hi"], defaultValue: defaultToken),
+            () =>
+                SizeToken.fromRaw(params: [" hi"], defaultValue: defaultToken),
             throwsA(isA<Exception>()));
       });
     });
@@ -171,20 +172,20 @@ void main() {
       test('parses input correctly', () {
         final defaultToken = ColorToken(color: 0xff000000);
         final token = ColorToken.fromRaw(
-            params: ["0xff000000"], defaultValue: defaultToken);
+            params: [" 0xff000000 "], defaultValue: defaultToken);
         expect(token.color, 0xff000000);
       });
       test('returns default token on input "d"', () {
         final defaultToken = ColorToken(color: 0xff000000);
         final token =
-            ColorToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+            ColorToken.fromRaw(params: [" d"], defaultValue: defaultToken);
         expect(token.color, defaultToken.color);
       });
       test('throws error on invalid input', () {
         final defaultToken = ColorToken(color: 0xff000000);
         expect(
-            () =>
-                ColorToken.fromRaw(params: ["2.3"], defaultValue: defaultToken),
+            () => ColorToken.fromRaw(
+                params: [" 2.3"], defaultValue: defaultToken),
             throwsA(isA<Exception>()));
       });
     });
@@ -202,20 +203,20 @@ void main() {
       test('parses input correctly', () {
         final defaultToken = ItalicsToken(isOn: 0);
         final token =
-            ItalicsToken.fromRaw(params: ["1"], defaultValue: defaultToken);
+            ItalicsToken.fromRaw(params: [" 1"], defaultValue: defaultToken);
         expect(token.isOn, 1);
       });
       test('returns default token on input "d"', () {
         final defaultToken = ItalicsToken(isOn: 0);
         final token =
-            ItalicsToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+            ItalicsToken.fromRaw(params: [" d"], defaultValue: defaultToken);
         expect(token.isOn, defaultToken.isOn);
       });
       test('throws error on invalid input', () {
         final defaultToken = ItalicsToken(isOn: 0);
         expect(
             () => ItalicsToken.fromRaw(
-                params: ["2.3"], defaultValue: defaultToken),
+                params: [" 2.3"], defaultValue: defaultToken),
             throwsA(isA<Exception>()));
       });
     });
@@ -225,7 +226,7 @@ void main() {
     test('fromRaw param "d" returns default value', () {
       final defaultToken = FontToken(font: "Roboto");
       final token =
-          FontToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+          FontToken.fromRaw(params: [" d"], defaultValue: defaultToken);
       expect(token.font, defaultToken.font);
     });
   });
@@ -252,7 +253,7 @@ void main() {
             color: 0x00000000,
             isUnderline: 1);
         final token =
-            LinkToken.fromRaw(params: ["d"], defaultValue: defaultToken);
+            LinkToken.fromRaw(params: [" d"], defaultValue: defaultToken);
         expect(token.link, "d");
       });
       test('missing param inputs returns default values', () {
@@ -266,12 +267,28 @@ void main() {
             params: ["google.com"], defaultValue: defaultToken);
 
         expect(linkToken.styleChange, defaultToken.styleChange);
-        linkToken =
-            LinkToken.fromRaw(params: ["d", "d", "d"], defaultValue: defaultToken);
+        linkToken = LinkToken.fromRaw(
+            params: [" d", " d", " d"], defaultValue: defaultToken);
         expect(linkToken.link, "d");
         expect(linkToken.styleChange, defaultToken.styleChange);
         expect(linkToken.color, defaultToken.color);
         expect(linkToken.isUnderline, defaultToken.isUnderline);
+      });
+
+      test('test input parsing', () {
+        var defaultToken = LinkToken(
+            link: "google.com",
+            styleChange: 0,
+            color: 0x00000000,
+            isUnderline: 1);
+
+        var linkToken = LinkToken.fromRaw(
+            params: ["google.com ", " d", " 0xff00ff00", "  0"],
+            defaultValue: defaultToken);
+        expect(linkToken.link, "google.com");
+        expect(linkToken.styleChange, defaultToken.styleChange);
+        expect(linkToken.color, 0xff00ff00);
+        expect(linkToken.isUnderline, 0);
       });
     });
   });
