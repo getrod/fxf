@@ -158,6 +158,16 @@ The same can be said for style commands with more than one parameter like underl
 
 For link commands, when ```#(d)``` is used, it's to end a link area ([see example above](#features)).
 
+## Installation
+In your ```pubspec.yaml```, add to your dependencies:
+```yaml
+dependencies:
+    ...
+    fxf:
+        git:
+            url: https://github.com/getrod/fxf.git
+```
+
 <!-- ## Features
 
 TODO: List what your package can do. Maybe include images, gifs, or videos.
